@@ -1,0 +1,3 @@
+# Create sensors data directory
+on post-fs-data
+    mkdir /data/vendor/sensor 0770 root system

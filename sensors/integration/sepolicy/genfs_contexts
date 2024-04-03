@@ -1,0 +1,11 @@
+# sensors sysfs
+genfscon sysfs /bus/iio/devices				u:object_r:sysfs_sensors:s0
+
+# rb5
+# icm chip on i2C and spi
+genfscon sysfs /devices/platform/soc@0/9c0000.geniqup/990000.i2c/i2c-4/4-0068			u:object_r:sysfs_sensors:s0
+genfscon sysfs /devices/platform/soc@0/8c0000.geniqup/88c000.spi/spi_master/spi17/spi17.0	u:object_r:sysfs_sensors:s0
+# ak09915 on i2c
+genfscon sysfs /devices/platform/soc@0/9c0000.geniqup/990000.i2c/i2c-4/4-000e			u:object_r:sysfs_sensors:s0
+# icp101xx on i2c
+genfscon sysfs /devices/platform/soc@0/9c0000.geniqup/990000.i2c/i2c-4/4-0063			u:object_r:sysfs_sensors:s0

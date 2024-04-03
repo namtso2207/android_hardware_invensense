@@ -1,0 +1,2 @@
+# sensors data
+/data/vendor/sensor(/.*)?		u:object_r:sensor_vendor_data_file:s0

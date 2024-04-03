@@ -1,0 +1,331 @@
+// Copyright (C) 2020 InvenSense, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Sensors HAL common part
+cc_defaults {
+    name: "sensors_invensense_defaults",
+    proprietary: true,
+    relative_install_path: "hw",
+    srcs: [
+        "sensors_mpl.cpp",
+        "SensorBase.cpp",
+        "MPLSensor.cpp",
+        "MPLSupport.cpp",
+        "MPLAdapter.cpp",
+        "MPLLogger.cpp",
+        "InputEventReader.cpp",
+        "inv_iio_buffer.c",
+        "LightSensor.IIO.secondary.cpp",
+    ],
+    shared_libs: [
+        "libc",
+        "libc++",
+        "libcutils",
+        "liblog",
+        "libhardware",
+        "libutils",
+    ],
+    static_libs: [
+        "libdirectreport",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DLOG_TAG=\"InvnSensors\"",
+        "-DINV_SENSORS_HAL_VERSION_MAJOR=13",
+        "-DINV_SENSORS_HAL_VERSION_MINOR=1",
+        "-DINV_SENSORS_HAL_VERSION_PATCH=1",
+        "-DINV_SENSORS_HAL_VERSION_SUFFIX=\"\"",
+        "-DLINUX=1",
+        "-DDIRECT_REPORT",
+        "-DINVENSENSE_COMPASS_CAL",
+    ],
+    export_shared_lib_headers: [
+        "libhardware",
+    ],
+    sanitize: {
+        cfi: true,
+    },
+    owner: "invensense",
+}
+
+// mllite library
+cc_defaults {
+    name: "sensors_invensense_mllite",
+    static_libs: ["libmllite"],
+}
+
+// mllite library IPL variant
+cc_defaults {
+    name: "sensors_invensense_mllite_ipl",
+    static_libs: ["libmllite_ipl"],
+}
+
+// Compass support on primary bus
+cc_defaults {
+    name: "sensors_invensense_compass_primary",
+    srcs: [
+        "CompassSensor.IIO.primary.cpp",
+    ],
+    cflags: [
+        "-DCOMPASS_ON_PRIMARY_BUS",
+    ],
+}
+
+// Compass support on secondary bus
+cc_defaults {
+    name: "sensors_invensense_compass_secondary",
+    srcs: [
+        "CompassSensor.IIO.secondary.cpp",
+    ],
+}
+
+// Pressure support on primary bus
+cc_defaults {
+    name: "sensors_invensense_pressure_primary",
+    srcs: [
+        "PressureSensor.IIO.primary.cpp",
+    ],
+    cflags: [
+        "-DPRESSURE_ON_PRIMARY_BUS",
+    ],
+}
+
+// Pressure support on secondary bus
+cc_defaults {
+    name: "sensors_invensense_pressure_secondary",
+    srcs: [
+        "PressureSensor.IIO.secondary.cpp",
+    ],
+}
+
+// Hi-Fi Sensors specs support
+cc_defaults {
+    name: "sensors_invensense_hifi",
+    cflags: [
+        "-DINV_HIFI_SUPPORT",
+        "-DINV_HIFI_ACCEL_16G",
+        "-DINV_HIFI_HIGH_ODR",
+    ],
+}
+
+// Software algorithms
+cc_defaults {
+    name: "sensors_invensense_algo_sw",
+    srcs: [
+        "MPLBuilder.cpp",
+    ],
+    cflags: [
+        "-DINV_USE_ALGO_LIB",
+    ],
+    static_libs: [
+        "libInvnAlgoAGMOpen",
+    ],
+}
+
+// ICM-20608D configuration
+cc_library_shared {
+    name: "sensors.icm20608d",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-20609 configuration
+cc_library_shared {
+    name: "sensors.icm20609",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-20609 IPL configuration
+cc_library_shared {
+    name: "sensors.icm20609I",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite_ipl",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_algo_sw",
+    ],
+    cflags: [
+        "-DINV_IPL",
+    ],
+}
+
+// IAM-20608 configuration for Automotive Android
+// Use specific algo parameters + Gyro 250dps
+cc_library_shared {
+    name: "sensors.iam20680",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_algo_sw",
+    ],
+    cflags: [
+        "-DINV_FUSION_AGM_AUTOMOTIVE",
+        "-DINV_GYRO_250DPS",
+    ],
+}
+
+// ICM-20648 configuration, using DMP for algorithms
+cc_library_shared {
+    name: "sensors.icm20648",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_secondary",
+        "sensors_invensense_pressure_secondary",
+    ],
+}
+
+// ICM-20948 configuration, using DMP for algorithms
+cc_library_shared {
+    name: "sensors.icm20948",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_secondary",
+        "sensors_invensense_pressure_secondary",
+    ],
+}
+
+// ICM-20602 configuration
+cc_library_shared {
+    name: "sensors.icm20602",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-20690 configuration
+cc_library_shared {
+    name: "sensors.icm20690",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_secondary",
+        "sensors_invensense_pressure_secondary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-40609D configuration
+cc_library_shared {
+    name: "sensors.icm40609d",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-426xx configuration
+cc_library_shared {
+    name: "sensors.icm42600",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// IIM-426xx configuration
+cc_library_shared {
+    name: "sensors.iim42600",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-42686 configuration
+cc_library_shared {
+    name: "sensors.icm42686",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-42688 configuration
+cc_library_shared {
+    name: "sensors.icm42688",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-42607/42670 configuration
+cc_library_shared {
+    name: "sensors.icm43600",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_primary",
+        "sensors_invensense_pressure_primary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}
+
+// ICM-45600 configuration
+cc_library_shared {
+    name: "sensors.icm45600",
+    defaults: [
+        "sensors_invensense_defaults",
+        "sensors_invensense_mllite",
+        "sensors_invensense_compass_secondary",
+        "sensors_invensense_pressure_secondary",
+        "sensors_invensense_hifi",
+        "sensors_invensense_algo_sw",
+    ],
+}

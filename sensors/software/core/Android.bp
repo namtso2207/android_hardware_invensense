@@ -1,0 +1,75 @@
+// Copyright (C) 2020 InvenSense, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+cc_defaults {
+    name: "libmllite_defaults",
+    proprietary: true,
+    srcs: [
+        "mllite/start_manager.c",
+        "mllite/data_builder.c",
+        "mllite/mlmath.c",
+        "mllite/mpl.c",
+        "mllite/ml_math_func.c",
+        "mllite/hal_outputs.c",
+        "mllite/message_layer.c",
+        "mllite/results_holder.c",
+        "mllite/storage_manager.c",
+        "mllite/linux/inv_sysfs_utils.c",
+        "mllite/linux/ml_android_to_imu.c",
+        "mllite/linux/ml_sysfs_helper.c",
+        "mllite/linux/ml_load_dmp.c",
+        "mllite/linux/ml_stored_data.c",
+        "mllite/linux/ml_sensor_parsing.c",
+    ],
+    shared_libs: [
+        "liblog",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DLOG_TAG=\"Sensors\"",
+        "-DCAL_BIN_DATA_VENDOR_SENSOR",
+    ],
+    local_include_dirs: [
+        "mllite",
+        "mllite/linux",
+        "driver/include",
+    ],
+    header_libs: [
+        "libhardware_headers",
+    ],
+    export_include_dirs: [
+        "mllite",
+        "mllite/linux",
+        "driver/include",
+    ],
+    sanitize: {
+        cfi: true,
+    },
+    owner: "invensense",
+}
+
+cc_library_static {
+    name: "libmllite",
+    defaults: ["libmllite_defaults"],
+}
+
+cc_library_static {
+    name: "libmllite_ipl",
+    defaults: ["libmllite_defaults"],
+    cflags: [
+        "-DINV_IPL",
+    ],
+}

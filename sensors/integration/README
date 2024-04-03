@@ -1,0 +1,34 @@
+Android device integration example
+----------------------------------
+
+Here are some example files for integrating InvenSense Sensors HAL within an Android device.
+The point here is to add all the permissions required for having a full Treble device working.
+
+They have to be adapted for the device your are using (i2c and/or spi, selected chips, change in hw addresses).
+
+There are 3 kind of files:
+1. init.sensors.rc: init file for creating sensors data directory
+2. ueventd.sensors.rc: add standard Linux permissions to the sysfs files
+3. sepolicy/*: add all required SELinux policies
+
+Changes required:
+* ueventd.sensors.rc:
+    - change the sysfs directories for matching your device i2c/spi sysfs path
+    - keep only i2c and/or spi and the iio attributes depending on your chips (accel, gyro, mag, ...)
+* sepolicy/genfs_contexts
+    - change the sysfs directories for matching your device i2c/spi sysfs path
+    - keep only the chips you effectly have on your device
+
+Integration instructions:
+
+1. init.sensors.rc needs to be copied inside /vendor/etc/init/ using the PRODUCT_COPY_FILES directive:
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/init.sensors.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.sensors.rc
+
+2. ueventd.sensors.rc content needs to be copy-pasted into your device ueventd.rc file. Installation
+is done using the PRODUCT_COPY_FILES directive:
+PRODUCT_COPY_FILES +=  \
+    $(LOCAL_PATH)/ueventd.rc:$(TARGET_COPY_OUT_VENDOR)/ueventd.rc
+
+3. sepolicy files needs to be integrated using the BOARD_SEPOLICY_DIRS directive
+BOARD_SEPOLICY_DIRS += device/vendor/name/sensors/sepolicy
